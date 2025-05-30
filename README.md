@@ -78,13 +78,3 @@ rules:
   - efs_check
   - dockerfile_exists
 ```
-
-## 📦 Project Structure
-
-```
-containerize/
-├── cli.py          # CLI entrypoint (Typer)
-├── doctor/         # Doctor checks (env + repo)
-├── transformer/    # Ansible to OpenShift transformers
-├── utils.py        # Shared logic
-```
