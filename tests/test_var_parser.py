@@ -27,3 +27,43 @@ def describe_var_context():
         assert len(vars) == 6
         assert "top_level_env" in vars
         assert "deeply_nested_role_var" in vars
+        
+    def it_should_resolve_using_ansible_precedence_rules():
+        project = Path("tests/test_projects/precedence")
+        ctx = VarContext(project)
+        vars = ctx.load()
+
+        assert vars["fruit"] == "kiwi"
+        assert vars["color"] == "green"
+        assert len(vars) == 2
+    
+    def it_should_respect_precedence_without_role_vars():
+        project = Path("tests/test_projects/precedence")
+
+        # Simulate missing role vars
+        exclude = [
+            project / "roles/my-role/vars/main.yml" 
+        ]
+
+        ctx = VarContext(project_root=project, exclude_files=exclude)
+        vars = ctx.load()
+        
+        assert vars["fruit"] == "apples"
+        assert vars["color"] == "green"
+        assert len(vars) == 2
+        
+    def it_should_respect_precedence_without_group_vars():
+        project = Path("tests/test_projects/precedence")
+
+        # Simulate missing role vars
+        exclude = [
+            project / "roles/my-role/vars/main.yml",
+            project / "group_vars/all.yml" 
+        ]
+
+        ctx = VarContext(project_root=project, exclude_files=exclude)
+        vars = ctx.load()
+        
+        assert vars["fruit"] == "apples"
+        assert vars["color"] == "red"
+        assert len(vars) == 2

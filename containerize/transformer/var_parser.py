@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 import yaml
 
 logger = logging.getLogger(__name__)
@@ -24,40 +24,56 @@ class VarContext:
         variables = vc.load()
         print(variables["my_var"])
     """
-    def __init__(self, project_root: Path):
+
+    def __init__(self, project_root: Path, exclude_files: List[Path] = None):
         self.project_root = project_root
         self.vars: Dict[str, str] = {}
+        self.exclude_files = set(exclude_files or [])
 
-    def load(self):
+    def load(self) -> Dict[str, str]:
+        self._load_role_defaults()
         self._load_group_and_host_vars()
         self._load_role_vars()
         return self.vars
 
+    def _should_ignore_file(self, file: Path) -> bool:
+        """Check if a file should be excluded based on the test context."""
+        return file.resolve() in {f.resolve() for f in self.exclude_files}
+
     def _parse_yaml_file(self, path: Path) -> Dict:
-       try:
-        with open(path, "r") as f:
-            data = yaml.safe_load(f)
-            return data if isinstance(data, dict) else {}
-       except Exception as e:
-           logger.warning(f"Failed to parse {path}: {e}")
-           return {}
+        try:
+            if self._should_ignore_file(path):
+                logger.debug(f"Skipping excluded file: {path}")
+                return {}
+            with open(path, "r") as f:
+                data = yaml.safe_load(f)
+                return data if isinstance(data, dict) else {}
+        except Exception as e:
+            logger.warning(f"Failed to parse {path}: {e}")
+            return {}
 
-    def _load_group_and_host_vars(self):
-        for folder in ["group_vars", "host_vars"]:
-            path = self.project_root / folder
-            if path.exists():
-                for file in path.rglob("*.yml"):
-                    self.vars.update(self._parse_yaml_file(file))
-                for file in path.rglob("*.yaml"):
-                    self.vars.update(self._parse_yaml_file(file))
-
-    def _load_role_vars(self):
+    def _load_role_defaults(self):
         roles_path = self.project_root / "roles"
         if not roles_path.exists():
             return
 
         for file in roles_path.rglob("defaults/**/*.yml"):
             self.vars.update(self._parse_yaml_file(file))
+
+    def _load_group_and_host_vars(self):
+        for folder in ["group_vars", "host_vars"]:
+            path = self.project_root / folder
+            if not path.exists():
+                continue
+
+            for ext in ["*.yml", "*.yaml"]:
+                for file in path.rglob(ext):
+                    self.vars.update(self._parse_yaml_file(file))
+
+    def _load_role_vars(self):
+        roles_path = self.project_root / "roles"
+        if not roles_path.exists():
+            return
 
         for file in roles_path.rglob("vars/**/*.yml"):
             self.vars.update(self._parse_yaml_file(file))
