@@ -56,8 +56,8 @@ class VarContext:
         if not roles_path.exists():
             return
 
-        for file in roles_path.rglob("*/defaults/*.yml"):
+        for file in roles_path.rglob("defaults/**/*.yml"):
             self.vars.update(self._parse_yaml_file(file))
 
-        for file in roles_path.rglob("*/vars/*.yml"):
+        for file in roles_path.rglob("vars/**/*.yml"):
             self.vars.update(self._parse_yaml_file(file))

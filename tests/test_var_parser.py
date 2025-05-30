@@ -18,10 +18,12 @@ def describe_var_context():
         assert "role_var" in vars
         assert vars["role_var"] == "role-value"
         
-    def it_should_handle_deeply_nested_vars():
+    def it_should_handle_deeply_nested_group_vars():
         repo_path = Path("tests/test_projects/deeply_nested")
         
         context = VarContext(project_root=repo_path)
         vars = context.load()
         
-        assert len(vars) == 5
+        assert len(vars) == 6
+        assert "top_level_env" in vars
+        assert "deeply_nested_role_var" in vars
