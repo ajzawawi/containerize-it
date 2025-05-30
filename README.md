@@ -21,7 +21,7 @@ A single CLI to help you:
 
 ```bash
 git clone https://github.com/ajzawawi/containerize-it.git
-cd containerize-cli
+cd containerize-it
 pip install -e .
 ```
 ---
