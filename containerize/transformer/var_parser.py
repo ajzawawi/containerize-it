@@ -44,8 +44,12 @@ class VarContext:
 
     def _load_group_and_host_vars(self):
         for folder in ["group_vars", "host_vars"]:
-            for file in (self.project_root / folder).rglob("*.yml"):
-                self.vars.update(self._parse_yaml_file(file))
+            path = self.project_root / folder
+            if path.exists():
+                for file in path.rglob("*.yml"):
+                    self.vars.update(self._parse_yaml_file(file))
+                for file in path.rglob("*.yaml"):
+                    self.vars.update(self._parse_yaml_file(file))
 
     def _load_role_vars(self):
         roles_path = self.project_root / "roles"
