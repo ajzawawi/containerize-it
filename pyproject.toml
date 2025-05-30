@@ -1,0 +1,8 @@
+[project]
+name = "containerize"
+version = "0.1.0"
+description = "One CLI to doctor your system and convert Ansible playbooks to OpenShift."
+dependencies = ["typer[all]", "pyyaml"]
+
+[project.scripts]
+containerize = "containerize.cli:app"
