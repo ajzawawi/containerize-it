@@ -8,9 +8,16 @@ users:
   - name: Luke
   - name: Leia
 
+nested_dict:
+  key1: value1
+  key2: value2
+
 usernames: |
   {% for user in users %}
   - {{ user.name }}
   {% endfor %}
 
 usernames_filter: "{{ users | map(attribute='name') | list }}"
+combined: "{{ nested_dict | combine({'key3': 'value3'}) }}"
+flat_users: "{{ users | flatten }}"
+dict_items: "{{ nested_dict | dict2items }}"

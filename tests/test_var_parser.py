@@ -87,7 +87,6 @@ def describe_var_context():
         ctx = VarContext(project_root=project)
         vars = ctx.load()
 
-        print(vars)
         assert vars["users"] == [{"name": "Luke"}, {"name": "Leia"}]
         assert vars["usernames"] == ["Luke", "Leia"]
 
@@ -98,3 +97,32 @@ def describe_var_context():
 
         assert vars["users"] == [{"name": "Luke"}, {"name": "Leia"}]
         assert vars["usernames"] == ["Luke", "Leia"]
+        
+    def it_should_apply_ansible_combine_filter():
+        project = Path("tests/test_projects/interpolation")
+        ctx = VarContext(project_root=project)
+        vars = ctx.load()
+        
+        assert vars["combined"] == {
+            "key1": "value1",
+            "key2": "value2",
+            "key3": "value3"
+        }
+
+    def it_should_apply_ansible_dict2items_filter():
+        project = Path("tests/test_projects/interpolation")
+        ctx = VarContext(project_root=project)
+        vars = ctx.load()
+        
+        assert vars["dict_items"] == [
+            {"key": "key1", "value": "value1"},
+            {"key": "key2", "value": "value2"}
+        ]
+
+
+    def it_should_apply_ansible_flatten_filter():
+        project = Path("tests/test_projects/interpolation")
+        ctx = VarContext(project_root=project)
+        vars = ctx.load()
+        
+        assert vars["flat_users"] == [{"name": "Luke"}, {"name": "Leia"}]

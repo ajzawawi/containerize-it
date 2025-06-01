@@ -1,16 +1,15 @@
 import logging
 from pathlib import Path
 from typing import Dict, List
+from containerize.transformer.filters.registry import FilterRegistry
 from jinja2 import Environment, StrictUndefined, UndefinedError
 import yaml
 import re
 
+
 logger = logging.getLogger(__name__)
 INTERPOLATION_PATTERN = re.compile(r"{{.*?}}")
 BLOCK_PATTERN = re.compile(r"{%.*?%}", re.DOTALL)
-
-# Create a global Jinja environment
-jinja_env = Environment(undefined=StrictUndefined)
 
 
 class VarContext:
@@ -37,6 +36,8 @@ class VarContext:
         self.project_root = project_root
         self.vars: Dict[str, str] = {}
         self.exclude_files = set(exclude_files or [])
+        self.jinja_env = FilterRegistry().get_env() 
+
 
     def load(self) -> Dict[str, str]:
         self._load_role_defaults()
@@ -94,7 +95,7 @@ class VarContext:
         """
         def render_string(s: str, context: dict) -> str:
             try:
-                return jinja_env.from_string(s).render(**context)
+                return self.jinja_env.from_string(s).render(**context)
             except UndefinedError as e:
                 logger.warning(f"Failed to resolve: {s} → {e}")
                 return s
