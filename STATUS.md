@@ -36,13 +36,13 @@
 
 [ ] Add support for Ansible-specific filters:
 
-    [ ] dict2items	- Converts a dict to a list of key-value pairs
+    [x] dict2items	- Converts a dict to a list of key-value pairs
 
     [ ] items2dict	- Converts a list of key-value pairs to a dict
 
-    [ ] combine	 - Merges dictionaries
+    [x] combine	 - Merges dictionaries
 
-    [ ] flatten	- Flattens nested lists
+    [x] flatten	- Flattens nested lists
 
     [ ] unique	- Removes duplicate list items
 
