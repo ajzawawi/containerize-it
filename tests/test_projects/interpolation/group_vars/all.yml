@@ -12,6 +12,14 @@ nested_dict:
   key1: value1
   key2: value2
 
+dup_users: 
+  - name: Luke
+    id: 1
+  - name: luke
+    id: 1
+  - name: Leia
+    id: 2
+
 usernames: |
   {% for user in users %}
   - {{ user.name }}
@@ -21,3 +29,5 @@ usernames_filter: "{{ users | map(attribute='name') | list }}"
 combined: "{{ nested_dict | combine({'key3': 'value3'}) }}"
 flat_users: "{{ users | flatten }}"
 dict_items: "{{ nested_dict | dict2items }}"
+unique_users_case_insensitive: "{{ dup_users | unique(attribute='name') }}"
+unique_users_case_sensitive: "{{ dup_users | unique(attribute='name', case_sensitive=True) }}"

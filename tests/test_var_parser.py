@@ -126,3 +126,26 @@ def describe_var_context():
         vars = ctx.load()
         
         assert vars["flat_users"] == [{"name": "Luke"}, {"name": "Leia"}]
+        
+        
+    def it_should_apply_unique_filter_case_insensitive():
+        project = Path("tests/test_projects/interpolation")
+        ctx = VarContext(project_root=project)
+        vars = ctx.load()
+        
+        insensitive = vars["unique_users_case_insensitive"]
+        assert isinstance(insensitive, list)
+        assert len(insensitive) == 2  # "Luke" and "Leia"
+        names = {u["name"].lower() for u in insensitive}
+        assert names == {"luke", "leia"}
+
+    def it_should_apply_unique_filter_case_sensitive():
+        project = Path("tests/test_projects/interpolation")
+        ctx = VarContext(project_root=project)
+        vars = ctx.load()
+
+        sensitive = vars["unique_users_case_sensitive"]
+        assert isinstance(sensitive, list)
+        assert len(sensitive) == 3  # "Luke", "luke", "Leia"
+        names = {u["name"] for u in sensitive}
+        assert names == {"Luke", "luke", "Leia"}
