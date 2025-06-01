@@ -34,7 +34,7 @@
 
 ### Ansible Compatibility
 
-[ ] Add support for Ansible-specific filters:
+[x] Add support for Ansible-specific filters:
 
     [x] dict2items	- Converts a dict to a list of key-value pairs
 
@@ -44,19 +44,19 @@
 
     [x] flatten	- Flattens nested lists
 
-    [ ] unique	- Removes duplicate list items
+    [x] unique	- Removes duplicate list items
 
-    [ ] difference	- Returns list items not in another list
+    [x] difference	- Returns list items not in another list
 
-    [ ] intersect	- Returns common items
+    [x] intersect	- Returns common items
 
-    [ ] union	- Merges two lists
+    [x] union	- Merges two lists
 
-    [ ] selectattr, rejectattr - Filter a list of dicts based on attributes
+    [x] selectattr, rejectattr - Filter a list of dicts based on attributes
     
-    [ ] map, select, reject - Jinja standard filters extended in Ansible
+    [x] map, select, reject - Jinja standard filters extended in Ansible
 
-[ ] Import and register Ansible’s full Jinja filter set
+[x] Import and register Ansible’s full Jinja filter set
 
 [ ] Support `.j2` variable files or templated var files
 

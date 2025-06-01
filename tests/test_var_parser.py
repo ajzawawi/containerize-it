@@ -139,13 +139,86 @@ def describe_var_context():
         names = {u["name"].lower() for u in insensitive}
         assert names == {"luke", "leia"}
 
-    def it_should_apply_unique_filter_case_sensitive():
-        project = Path("tests/test_projects/interpolation")
+    def it_should_apply_difference_filter():
+        project = Path("tests/test_projects/filter_tests")
         ctx = VarContext(project_root=project)
         vars = ctx.load()
 
-        sensitive = vars["unique_users_case_sensitive"]
-        assert isinstance(sensitive, list)
-        assert len(sensitive) == 3  # "Luke", "luke", "Leia"
-        names = {u["name"] for u in sensitive}
-        assert names == {"Luke", "luke", "Leia"}
+        result = vars["difference_result"]
+        assert isinstance(result, list)
+        assert result == [1, 2]
+
+    def it_should_apply_intersect_filter():
+        project = Path("tests/test_projects/filter_tests")
+        ctx = VarContext(project_root=project)
+        vars = ctx.load()
+
+        result = vars["intersect_result"]
+        assert isinstance(result, list)
+        assert result == [3, 4, 5]
+        
+    def it_should_apply_union_filter():
+        project = Path("tests/test_projects/filter_tests")
+        ctx = VarContext(project_root=project)
+        vars = ctx.load()
+
+        result = vars["union_result"]
+        assert isinstance(result, list)
+        assert result == [1, 2, 3, 4, 5, 6]
+        
+    def it_should_apply_map_filter():
+        project = Path("tests/test_projects/filter_tests")
+        ctx = VarContext(project_root=project)
+        vars = ctx.load()
+
+        usernames = vars["usernames"]
+        assert isinstance(usernames, list)
+        assert usernames == ["Luke", "Leia", "Han"]
+        
+    def it_should_apply_select_filter():
+        project = Path("tests/test_projects/filter_tests")
+        ctx = VarContext(project_root=project)
+        vars = ctx.load()
+
+        selected = vars["selected"]
+        assert isinstance(selected, list)
+        assert selected == [1, 3, 5]
+        
+    def it_should_apply_reject_filter():
+        project = Path("tests/test_projects/filter_tests")
+        ctx = VarContext(project_root=project)
+        vars = ctx.load()
+
+        rejected = vars["rejected"]
+        assert isinstance(rejected, list)
+        assert rejected == [1, 3, 5]
+        
+    def it_should_apply_selectattr_filter():
+        project = Path("tests/test_projects/filter_tests")
+        ctx = VarContext(project_root=project)
+        vars = ctx.load()
+
+        result = vars["active_users"]
+        assert isinstance(result, list)
+        assert len(result) == 2
+        names = {user["name"] for user in result}
+        assert names == {"Luke", "Han"}
+        
+    def it_should_apply_rejectattr_filter():
+        project = Path("tests/test_projects/filter_tests")
+        ctx = VarContext(project_root=project)
+        vars = ctx.load()
+
+        result = vars["inactive_users"]
+        assert isinstance(result, list)
+        assert len(result) == 1
+        assert result[0]["name"] == "Leia"
+        
+    def it_should_apply_items2dict_filter():
+        project = Path("tests/test_projects/filter_tests")
+        ctx = VarContext(project_root=project)
+        vars = ctx.load()
+
+        result = vars["user_dict"]
+        assert isinstance(result, dict)
+        assert result == {"name": "Luke", "planet": "Tatooine"}
