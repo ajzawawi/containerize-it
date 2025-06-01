@@ -81,3 +81,20 @@ def describe_var_context():
         vars = ctx.load()
 
         assert vars["name_address"] == "Luke Skywalker - Tatooine"
+        
+    def it_should_resolve_block_jinja_into_list():
+        project = Path("tests/test_projects/interpolation")
+        ctx = VarContext(project_root=project)
+        vars = ctx.load()
+
+        print(vars)
+        assert vars["users"] == [{"name": "Luke"}, {"name": "Leia"}]
+        assert vars["usernames"] == ["Luke", "Leia"]
+
+    def it_should_resolve_inline_jinja_loop_with_filters():
+        project = Path("tests/test_projects/interpolation")
+        ctx = VarContext(project_root=project)
+        vars = ctx.load()
+
+        assert vars["users"] == [{"name": "Luke"}, {"name": "Leia"}]
+        assert vars["usernames"] == ["Luke", "Leia"]

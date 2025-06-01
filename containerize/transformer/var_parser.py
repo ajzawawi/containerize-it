@@ -1,12 +1,17 @@
 import logging
 from pathlib import Path
 from typing import Dict, List
-from jinja2 import Template, UndefinedError
+from jinja2 import Environment, StrictUndefined, UndefinedError
 import yaml
 import re
 
 logger = logging.getLogger(__name__)
 INTERPOLATION_PATTERN = re.compile(r"{{.*?}}")
+BLOCK_PATTERN = re.compile(r"{%.*?%}", re.DOTALL)
+
+# Create a global Jinja environment
+jinja_env = Environment(undefined=StrictUndefined)
+
 
 class VarContext:
     """
@@ -84,13 +89,12 @@ class VarContext:
 
     def _interpolate_vars(self, max_depth=30):
         """
-        Recursively interpolates variables that reference other variables.
-        Stops if values stabilize or max_depth is reached.
-        Ansible 
+        Recursively interpolates Jinja-style variables.
+        If the output is a YAML-parseable string (e.g. list or dict), it is parsed into native types.
         """
         def render_string(s: str, context: dict) -> str:
             try:
-                return Template(s).render(**context)
+                return jinja_env.from_string(s).render(**context)
             except UndefinedError as e:
                 logger.warning(f"Failed to resolve: {s} → {e}")
                 return s
@@ -101,12 +105,21 @@ class VarContext:
             new_vars = {}
 
             for key, value in self.vars.items():
-                if isinstance(value, str) and INTERPOLATION_PATTERN.search(value):
+                if isinstance(value, str) and (
+                    INTERPOLATION_PATTERN.search(value) or BLOCK_PATTERN.search(value)
+                ):
                     rendered = render_string(value, self.vars)
-                    if rendered != value:
+                    try:
+                        parsed = yaml.safe_load(rendered)
+                        new_value = parsed if parsed is not None else rendered
+                    except Exception as e:
+                        logger.warning(f"Failed to parse rendered value for {key}: {e}")
+                        new_value = rendered
+
+                    if new_value != value:
                         changed = True
-                        logger.debug(f"{key}: '{value}' → '{rendered}'")
-                    new_vars[key] = rendered
+                        logger.debug(f"{key}: '{value}' → '{new_value}'")
+                    new_vars[key] = new_value
                 else:
                     new_vars[key] = value
 

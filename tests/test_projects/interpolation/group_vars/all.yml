@@ -3,3 +3,14 @@ full_name: "{{ first_name }} {{ last_name }}"
 first_name: "Luke"
 last_name: "Skywalker"
 planet: "Tatooine"
+
+users:
+  - name: Luke
+  - name: Leia
+
+usernames: |
+  {% for user in users %}
+  - {{ user.name }}
+  {% endfor %}
+
+usernames_filter: "{{ users | map(attribute='name') | list }}"
