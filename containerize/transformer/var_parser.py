@@ -1,9 +1,12 @@
 import logging
 from pathlib import Path
 from typing import Dict, List
+from jinja2 import Template, UndefinedError
 import yaml
+import re
 
 logger = logging.getLogger(__name__)
+INTERPOLATION_PATTERN = re.compile(r"{{.*?}}")
 
 class VarContext:
     """
@@ -34,6 +37,7 @@ class VarContext:
         self._load_role_defaults()
         self._load_group_and_host_vars()
         self._load_role_vars()
+        self._interpolate_vars()
         return self.vars
 
     def _should_ignore_file(self, file: Path) -> bool:
@@ -77,3 +81,39 @@ class VarContext:
 
         for file in roles_path.rglob("vars/**/*.yml"):
             self.vars.update(self._parse_yaml_file(file))
+
+    def _interpolate_vars(self, max_depth=30):
+        """
+        Recursively interpolates variables that reference other variables.
+        Stops if values stabilize or max_depth is reached.
+        Ansible 
+        """
+        def render_string(s: str, context: dict) -> str:
+            try:
+                return Template(s).render(**context)
+            except UndefinedError as e:
+                logger.warning(f"Failed to resolve: {s} → {e}")
+                return s
+
+        for i in range(max_depth):
+            logger.debug(f"Interpolation pass {i + 1}")
+            changed = False
+            new_vars = {}
+
+            for key, value in self.vars.items():
+                if isinstance(value, str) and INTERPOLATION_PATTERN.search(value):
+                    rendered = render_string(value, self.vars)
+                    if rendered != value:
+                        changed = True
+                        logger.debug(f"{key}: '{value}' → '{rendered}'")
+                    new_vars[key] = rendered
+                else:
+                    new_vars[key] = value
+
+            self.vars = new_vars
+
+            if not changed:
+                logger.debug("All variables fully resolved.")
+                break
+        else:
+            logger.warning("Reached max interpolation depth without resolving all variables.")

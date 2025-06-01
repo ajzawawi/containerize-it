@@ -1,0 +1,5 @@
+name_address: "{{ full_name }} - {{ planet }}"
+full_name: "{{ first_name }} {{ last_name }}"
+first_name: "Luke"
+last_name: "Skywalker"
+planet: "Tatooine"

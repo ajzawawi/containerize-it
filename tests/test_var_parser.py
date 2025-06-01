@@ -67,3 +67,17 @@ def describe_var_context():
         assert vars["fruit"] == "apples"
         assert vars["color"] == "red"
         assert len(vars) == 2
+        
+    def it_should_resolve_variable_references():
+        project = Path("tests/test_projects/interpolation")
+        ctx = VarContext(project_root=project)
+        
+        vars = ctx.load()
+        assert vars["full_name"] == "Luke Skywalker"
+
+    def it_should_fail_to_resolve_nested_templates():
+        project = Path("tests/test_projects/interpolation")
+        ctx = VarContext(project_root=project)
+        vars = ctx.load()
+
+        assert vars["name_address"] == "Luke Skywalker - Tatooine"
