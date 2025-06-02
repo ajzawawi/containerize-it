@@ -1,4 +1,3 @@
-
 from containerize.transformer.task_transformers.copy import transform_copy
 
 class TaskTransformer:

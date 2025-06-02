@@ -1,0 +1,5 @@
+- name: Setup step
+  import_tasks: setup.yml
+- name: Final step
+  debug:
+    msg: "Done"

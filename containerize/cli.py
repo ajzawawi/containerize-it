@@ -1,8 +1,9 @@
 import typer
+import yaml
 from pathlib import Path
 import logging
 
-from containerize.transformer import RequirementsResolver
+from containerize.transformer.requirements_resolver import RequirementsResolver
 
 
 logger = logging.getLogger(__name__)
@@ -49,6 +50,11 @@ def transform(
 
     # Step 2: Load playbook, resolve roles, transform tasks
     logger.info("🔍 Parsing playbook and generating manifests...")
+    
+    with open(playbook, "r") as f:
+        playbook_data = yaml.safe_load(f)
+        
+    print(playbook_data)
 
     typer.echo(f"📁 Generated OpenShift manifests in {out}")
 
