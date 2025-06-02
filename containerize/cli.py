@@ -1,6 +1,11 @@
 import typer
 from pathlib import Path
+import logging
 
+from containerize.transformer import RequirementsResolver
+
+
+logger = logging.getLogger(__name__)
 app = typer.Typer(help="🧪 Diagnose and 🛠 Transform your repo for containerization.")
 
 @app.command()
@@ -20,12 +25,31 @@ def doctor(repo_path: Path):
     typer.echo("🩺 Doctor complete.")
 
 @app.command()
-def transform(playbook: Path, output: Path = Path("./k8s-output")):
+def transform(
+    playbook: Path,
+    output: Path = Path("./k8s-output"),
+    requirements: Path = Path("requirements.yml"),
+    roles_dir: Path = Path("roles")
+):    
     """
     🔄 Convert an Ansible playbook to OpenShift manifests.
     """
     typer.echo(f"⚙️ Transforming {playbook} ...")
-    # Placeholder for conversion logic
+    
+    #TODO: Respect ansible.cfg for custom path for roles
+    
+    # Step 1: Fetch roles in requirements.yml if it exists
+    if requirements.exists():
+        logger.info(f"📦 Found {requirements}, resolving roles...")
+        resolver = RequirementsResolver(str(requirements), str(roles_dir))
+        resolver.load()
+        resolver.clone_roles()
+    else:
+        logger.warning(f"⚠️ No {requirements} found — skipping role fetch.")
+
+    # Step 2: Load playbook, resolve roles, transform tasks
+    logger.info("🔍 Parsing playbook and generating manifests...")
+
     typer.echo(f"📁 Generated OpenShift manifests in {out}")
 
 if __name__ == "__main__":
