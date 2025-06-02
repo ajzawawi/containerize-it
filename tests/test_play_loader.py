@@ -36,6 +36,5 @@ def describe_play_loader():
                     
         loader = PlayLoader(playbook=parsed_playbook, roles_dir=roles_dir, var_context=vars)
         tasks = loader.load_tasks()
-        print(tasks)
 
         assert tasks[1]["debug"]["msg"] == "Hi Luke Skywalker from Tatooine"

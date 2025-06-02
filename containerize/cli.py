@@ -8,6 +8,12 @@ from containerize.transformer.var_parser import VarContext
 
 from containerize.transformer.play_loader import PlayLoader
 
+from containerize.transformer.output_type import OutputType
+
+from containerize.transformer.playbook_transformer import PlaybookTransformer
+
+from containerize.transformer.output.output_renderer import OutputRenderer
+
 
 logger = logging.getLogger(__name__)
 app = typer.Typer(help="🧪 Diagnose and 🛠 Transform your repo for containerization.")
@@ -33,7 +39,8 @@ def transform(
     playbook: Path,
     output: Path = Path("./k8s-output"),
     requirements: Path = Path("requirements.yml"),
-    roles_dir: Path = Path("roles")
+    roles_dir: Path = Path("roles"),
+    output_type: OutputType = OutputType.raw
 ):    
     """
     🔄 Convert an Ansible playbook to OpenShift manifests.
@@ -72,11 +79,17 @@ def transform(
     loader = PlayLoader(playbook=playbook_data, roles_dir=roles_path, var_context=vars)
     tasks = loader.load_tasks()
 
-    #  Step 5: Show the loaded tasks for now
+    #  Step 5: Transform tasks to Openshift artifacts
     for task in tasks:
         typer.echo(f"✅ Task: {task.get('name')}")
 
-    # typer.echo(f"📁 Generated OpenShift manifests in {out}")
+    transformer = PlaybookTransformer(tasks)
+    k8s_objects = transformer.transform()
+    
+    # Step 6: Output Rendering
+    renderer = OutputRenderer(output_type=output_type, output_dir=output)
+
+    typer.echo(f"📁 Generated OpenShift project in {out}")
 
 if __name__ == "__main__":
     app()
