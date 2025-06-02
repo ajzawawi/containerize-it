@@ -2,3 +2,4 @@
   hosts: all
   roles:
     - my_role
+    - another_role
