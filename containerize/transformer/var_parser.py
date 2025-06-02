@@ -6,7 +6,6 @@ from jinja2 import Environment, StrictUndefined, UndefinedError
 import yaml
 import re
 
-
 logger = logging.getLogger(__name__)
 INTERPOLATION_PATTERN = re.compile(r"{{.*?}}")
 BLOCK_PATTERN = re.compile(r"{%.*?%}", re.DOTALL)

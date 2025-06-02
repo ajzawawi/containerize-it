@@ -24,8 +24,5 @@ def unique(value, attribute=None, case_sensitive=False):
 
 def get_filters():
     return {
-        # "flatten": flatten,
-        # "combine": combine,
-        # "dict2items": dict2items,
         "unique": unique
     }
