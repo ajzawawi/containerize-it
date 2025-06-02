@@ -22,9 +22,7 @@ def describe_play_loader():
             "Greeting",      # from main.yml
             "Final step"    # from main.yml
         ]
-        
-        assert tasks[1]["debug"]["msg"] == "Hi Luke Skywalker from Tatooine"
-        
+                
         def it_should_apply_vars_including_deeply_nested():
             repo_path = Path("tests/test_projects/playloader_basic")
             site_file = repo_path / "site.yml"
@@ -35,8 +33,9 @@ def describe_play_loader():
             
             context = VarContext(project_root=repo_path)
             vars = context.load()
-            
+                        
             loader = PlayLoader(playbook=parsed_playbook, roles_dir=roles_dir, var_context=vars)
             tasks = loader.load_tasks()
             
             assert tasks[1]["debug"]["msg"] == "Hi Luke Skywalker from Tatooine"
+            print(tasks)
