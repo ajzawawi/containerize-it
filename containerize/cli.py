@@ -6,6 +6,8 @@ import logging
 from containerize.transformer.requirements_resolver import RequirementsResolver
 from containerize.transformer.var_parser import VarContext
 
+from containerize.transformer.play_loader import PlayLoader
+
 
 logger = logging.getLogger(__name__)
 app = typer.Typer(help="🧪 Diagnose and 🛠 Transform your repo for containerization.")
@@ -40,10 +42,16 @@ def transform(
     
     #TODO: Respect ansible.cfg for custom path for roles
     
+    # Make everything relative to the project root
+    project_root = playbook.parent
+    roles_path = (project_root / roles_dir).resolve()
+    requirements_path = (project_root / requirements).resolve()
+    
+    
     # Step 1: Fetch roles in requirements.yml if it exists
     if requirements.exists():
         logger.info(f"📦 Found {requirements}, resolving roles...")
-        resolver = RequirementsResolver(str(requirements), str(roles_dir))
+        resolver = RequirementsResolver(str(requirements_path), str(roles_path))
         resolver.load()
         resolver.clone_roles()
     else:
@@ -54,16 +62,21 @@ def transform(
     
     with open(playbook, "r") as f:
         playbook_data = yaml.safe_load(f)
-        
-    print(playbook_data)
-    
+            
     # Step 3: Load variables using VarContext
     project_root = playbook.parent  # Assume project root is where site.yml is
     var_context = VarContext(project_root=project_root)
     vars = var_context.load()
 
+    # Step 4: Load and flatten all tasks using PlayLoader
+    loader = PlayLoader(playbook=playbook_data, roles_dir=roles_path, var_context=vars)
+    tasks = loader.load_tasks()
 
-    typer.echo(f"📁 Generated OpenShift manifests in {out}")
+    #  Step 5: Show the loaded tasks for now
+    for task in tasks:
+        typer.echo(f"✅ Task: {task.get('name')}")
+
+    # typer.echo(f"📁 Generated OpenShift manifests in {out}")
 
 if __name__ == "__main__":
     app()
