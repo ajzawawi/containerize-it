@@ -1,0 +1,2 @@
+role_var: "role-value"
+external_var: "I'm a variable imported from an external playbook!"

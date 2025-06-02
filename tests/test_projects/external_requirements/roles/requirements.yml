@@ -1,0 +1,4 @@
+roles:
+  - name: external_role_example
+    src: https://fake.git/repo/example_role.git
+    version: main
