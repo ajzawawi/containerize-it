@@ -58,6 +58,8 @@
 
 [x] Import and register Ansible’s full Jinja filter set
 
+[x] Import external roles using both formats for requirements.yml file
+
 [ ] Support `.j2` variable files or templated var files
 
 [ ] Support `vars/main.yml` in other relevant Ansible folders (e.g., `tasks/`, `handlers/`)
