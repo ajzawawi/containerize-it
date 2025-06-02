@@ -73,6 +73,7 @@ def transform(
     tasks = loader.load_tasks()
 
     #  Step 5: Show the loaded tasks for now
+    print(tasks)
     for task in tasks:
         typer.echo(f"✅ Task: {task.get('name')}")
 
