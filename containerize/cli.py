@@ -4,6 +4,7 @@ from pathlib import Path
 import logging
 
 from containerize.transformer.requirements_resolver import RequirementsResolver
+from containerize.transformer.var_parser import VarContext
 
 
 logger = logging.getLogger(__name__)
@@ -55,6 +56,12 @@ def transform(
         playbook_data = yaml.safe_load(f)
         
     print(playbook_data)
+    
+    # Step 3: Load variables using VarContext
+    project_root = playbook.parent  # Assume project root is where site.yml is
+    var_context = VarContext(project_root=project_root)
+    vars = var_context.load()
+
 
     typer.echo(f"📁 Generated OpenShift manifests in {out}")
 

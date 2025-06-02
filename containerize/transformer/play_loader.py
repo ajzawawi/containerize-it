@@ -1,10 +1,17 @@
+import logging
 import yaml
 from pathlib import Path
+from containerize.transformer.filters.registry import FilterRegistry
+
+logger = logging.getLogger(__name__)
 
 class PlayLoader:
-    def __init__(self, playbook: list, roles_dir: Path):
+    def __init__(self, playbook: list, roles_dir: Path, var_context=None):
         self.playbook = playbook
         self.roles_dir = roles_dir
+        self.var_context = var_context or {}
+        self.jinja_env = FilterRegistry().get_env() 
+
 
     def load_tasks(self):
         all_tasks = []
@@ -24,6 +31,41 @@ class PlayLoader:
                 all_tasks.extend(play.get("tasks", []))
 
         return all_tasks
+    
+    def _render_with_vars(self, value):
+        if isinstance(value, str):
+            try:
+                template = self.jinja_env.from_string(value)
+                rendered = template.render(**self.var_context)
+                # Try to parse rendered string into structured type (list/dict/bool/etc.)
+                
+                try:
+                    parsed = yaml.safe_load(rendered)
+                    return parsed if parsed is not None else rendered
+                except Exception as e:
+                    logger.warning(f"Failed to parse rendered value: '{rendered}' → {e}")
+                    return rendered
+            except Exception as e:
+                logger.warning(f"Failed to render template: '{value}' → {e}")
+                return value
+        return value
+    
+    def _render_deep(self, value):
+        if isinstance(value, str):
+            return self._render_with_vars(value)
+
+        elif isinstance(value, list):
+            return [self._render_deep(item) for item in value]
+
+        elif isinstance(value, dict):
+            return {
+                self._render_with_vars(k) if isinstance(k, str) else k:
+                self._render_deep(v)
+                for k, v in value.items()
+            }
+
+        # Return primitives (int, float, bool, None) as-is
+        return value  
 
     def _expand_tasks(self, file: Path, base_dir: Path) -> list:
         with open(file) as f:
@@ -40,8 +82,8 @@ class PlayLoader:
                 included_tasks = self._expand_tasks(include_path, base_dir)
                 expanded.extend(included_tasks)
             else:
-                expanded.append(task)
+                rendered_task = self._render_deep(task)
+                expanded.append(rendered_task)
 
         return expanded
 
-    

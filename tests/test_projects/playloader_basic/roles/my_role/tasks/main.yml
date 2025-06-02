@@ -1,5 +1,10 @@
 - name: Setup step
   import_tasks: setup.yml
+
+- name: Greeting
+  debug:
+    msg: "Hi {{ first_name }} {{ last_name }} from {{ planet.name }}"
+    
 - name: Final step
   debug:
     msg: "Done"

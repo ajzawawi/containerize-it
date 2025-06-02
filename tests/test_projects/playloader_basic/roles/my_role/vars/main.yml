@@ -1,1 +1,5 @@
 role_var: "role-value"
+first_name: "Luke"
+last_name: "Skywalker"
+planet:
+  name: Tatooine
