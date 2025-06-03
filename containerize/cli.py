@@ -5,15 +5,10 @@ import logging
 
 from containerize.transformer.requirements_resolver import RequirementsResolver
 from containerize.transformer.var_parser import VarContext
-
 from containerize.transformer.play_loader import PlayLoader
-
-from containerize.transformer.output_type import OutputType
-
+from containerize.transformer.output.output_type import OutputType
 from containerize.transformer.playbook_transformer import PlaybookTransformer
-
 from containerize.transformer.output.output_renderer import OutputRenderer
-
 
 logger = logging.getLogger(__name__)
 app = typer.Typer(help="🧪 Diagnose and 🛠 Transform your repo for containerization.")
@@ -89,7 +84,7 @@ def transform(
     # Step 6: Output Rendering
     renderer = OutputRenderer(output_type=output_type, output_dir=output)
 
-    typer.echo(f"📁 Generated OpenShift project in {out}")
+    typer.echo(f"📁 Generated OpenShift project in {output}")
 
 if __name__ == "__main__":
     app()
