@@ -13,8 +13,7 @@ class PlaybookTransformer:
         for play in self.playbook:
             tasks = play.get("tasks", [])
             for task in tasks:
-                self.config_ctx.register_copy_task(task, configmap_name_hint=self.role_name_hint)
-                result = TaskTransformer.transform_task(task)
+                result = TaskTransformer.transform_task(task, self.config_ctx, self.role_name_hint)
                 if result:
                     self.output.append(result)
         self._generate_grouped_config_maps()

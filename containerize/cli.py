@@ -3,8 +3,8 @@ import yaml
 from pathlib import Path
 import logging
 
-from containerize.transformer.requirements_resolver import RequirementsResolver
-from containerize.transformer.var_parser import VarContext
+from containerize.transformer.requirements.requirements_resolver import RequirementsResolver
+from containerize.transformer.context.var_parser import VarContext
 from containerize.transformer.play_loader import PlayLoader
 from containerize.transformer.output.output_type import OutputType
 from containerize.transformer.playbook_transformer import PlaybookTransformer

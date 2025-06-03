@@ -1,11 +1,12 @@
 import logging
 from containerize.transformer.tasks.copy import transform_copy
+from containerize.transformer.config.config_mount_context import ConfigMountContext
 
 logger = logging.getLogger(__name__)
 
 class TaskTransformer:
     @staticmethod
-    def transform_task(task: dict) -> dict | None:
+    def transform_task(task: dict, config_ctx: ConfigMountContext, role_name_hint: str) -> dict | None:
         module_name = TaskTransformer._detect_module(task)
 
         if not module_name:
@@ -14,7 +15,7 @@ class TaskTransformer:
 
         match module_name:
             case "copy":
-                return transform_copy(task)
+                return transform_copy(task, config_ctx, role_name_hint)
             case "systemd":
                 # TODO: Generate Deployment or postStart lifecycle hook
                 return {

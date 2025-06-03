@@ -1,7 +1,7 @@
 import shutil
 from pathlib import Path
-from containerize.transformer.requirements_resolver import RequirementsResolver
-from containerize.transformer.var_parser import VarContext
+from containerize.transformer.requirements.requirements_resolver import RequirementsResolver
+from containerize.transformer.context.var_parser import VarContext
 
 def describe_requirements_resolver():
     def it_should_successfully_process_external_role_requirements(mocker):
@@ -21,7 +21,7 @@ def describe_requirements_resolver():
             elif "checkout" in cmd:
                 pass  # no-op
 
-        mocker.patch("containerize.transformer.requirements_resolver.subprocess.run", side_effect=fake_git_clone)
+        mocker.patch("containerize.transformer.requirements.requirements_resolver.subprocess.run", side_effect=fake_git_clone)
 
         resolver = RequirementsResolver(str(requirements_file), str(target_dir))
         resolver.load()
@@ -59,7 +59,7 @@ def describe_requirements_resolver():
             elif "checkout" in cmd:
                 pass  # no-op
 
-        mocker.patch("containerize.transformer.requirements_resolver.subprocess.run", side_effect=fake_git_clone)
+        mocker.patch("containerize.transformer.requirements.requirements_resolver.subprocess.run", side_effect=fake_git_clone)
 
         resolver = RequirementsResolver(str(requirements_file), str(target_dir))
         resolver.load()

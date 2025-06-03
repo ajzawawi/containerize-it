@@ -1,15 +1,4 @@
+from containerize.transformer.config.config_mount_context import ConfigMountContext
 
-def transform_copy(task):
-    copy_args = task.get("copy", {})
-    src = copy_args.get("src")
-    dest = copy_args.get("dest")
-    
-    # Create a ConfigMap YAML dict
-    return {
-        "apiVersion": "v1",
-        "kind": "ConfigMap",
-        "metadata": {"name": "generated-config"},
-        "data": {
-            dest.split('/')[-1]: f"# from {src} (content placeholder)"
-        }
-    }
+def transform_copy(task: dict, config_ctx: ConfigMountContext, role_name_hint: str) -> None:
+    config_ctx.register_copy_task(task, configmap_name_hint=role_name_hint)

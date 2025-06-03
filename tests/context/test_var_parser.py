@@ -1,6 +1,6 @@
 import pytest
 from pathlib import Path
-from containerize.transformer.var_parser import VarContext
+from containerize.transformer.context.var_parser import VarContext
 
 def describe_var_context():
     def it_should_load_vars_from_all_sources():
