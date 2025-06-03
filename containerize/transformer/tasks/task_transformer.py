@@ -1,5 +1,5 @@
 import logging
-from containerize.transformer.task_transformers.copy import transform_copy
+from containerize.transformer.tasks.copy import transform_copy
 
 logger = logging.getLogger(__name__)
 

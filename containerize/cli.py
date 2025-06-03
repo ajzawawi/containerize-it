@@ -73,7 +73,7 @@ def transform(
     # Step 4: Load and flatten all tasks using PlayLoader
     loader = PlayLoader(playbook=playbook_data, roles_dir=roles_path, var_context=vars)
     tasks = loader.load_tasks()
-
+    
     #  Step 5: Transform tasks to Openshift artifacts
     for task in tasks:
         typer.echo(f"✅ Task: {task.get('name')}")
@@ -82,7 +82,7 @@ def transform(
     k8s_objects = transformer.transform()
     
     # Step 6: Output Rendering
-    renderer = OutputRenderer(output_type=output_type, output_dir=output)
+    # renderer = OutputRenderer(output_type=output_type, output_dir=output)
 
     typer.echo(f"📁 Generated OpenShift project in {output}")
 

@@ -4,7 +4,11 @@ class ConfigMountContext:
     def __init__(self):
         self.mounts = {}
     
-    def register_copy_task(self, src: str, dest: str, configmap_name_hint: str):
+    def register_copy_task(self, task, configmap_name_hint: str):
+        copy_args = task["copy"]
+        src = copy_args.get("src")
+        dest = copy_args.get("dest")
+        
         mount_path = os.path.dirname(dest)
         filename = os.path.basename(dest)
         
