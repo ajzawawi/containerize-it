@@ -40,6 +40,7 @@ def transform(
     """
     🔄 Convert an Ansible playbook to OpenShift manifests.
     """
+    typer.echo(f"⚙️ Scanning your ansible playbook {playbook} ...")
     typer.echo(f"⚙️ Transforming {playbook} ...")
     
     #TODO: Respect ansible.cfg for custom path for roles
@@ -76,13 +77,14 @@ def transform(
     
     #  Step 5: Transform tasks to Openshift artifacts
     for task in tasks:
-        typer.echo(f"✅ Task: {task.get('name')}")
+        typer.echo(f"Converting ✅ Task: {task.get('name')}")
 
     transformer = PlaybookTransformer(tasks)
     k8s_objects = transformer.transform()
     
     # Step 6: Output Rendering
-    # renderer = OutputRenderer(output_type=output_type, output_dir=output)
+    renderer = OutputRenderer(output_type=output_type, output_dir=output)
+    renderer.render(k8s_objects)
 
     typer.echo(f"📁 Generated OpenShift project in {output}")
 
