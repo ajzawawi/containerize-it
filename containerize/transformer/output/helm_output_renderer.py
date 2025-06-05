@@ -45,10 +45,10 @@ class HelmOutputRenderer:
             "version": "0.1.0",
             "description": "Auto-generated from Ansible playbook"
         }
-        
+                
         # Chart
         with open(chart_dir / "Chart.yaml", "w") as f:
-            yaml.dump(chart_yaml, sort_keys=False)
+            yaml.dump(chart_yaml, f, sort_keys=False)
            
         # Values.yaml 
         with open(chart_dir / "values.yaml", "w") as f:
