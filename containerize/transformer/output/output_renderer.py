@@ -23,7 +23,6 @@ class OutputRenderer:
             raise ValueError(f"Unsupported output type: {self.output_type}")
             
     def _render_raw(self, k8s_objects):
-        print("rendering raw!")
         for idx, obj in enumerate(k8s_objects):
             kind = obj.get("kind", "UnknownKind").lower()
             name = obj.get("metadata", {}).get("name", f"unnamed-{idx}")
@@ -33,7 +32,7 @@ class OutputRenderer:
                 yaml.dump(obj, f, sort_keys=False)
     
     def _render_helm(self, k8s_objects):
-        HelmOutputRenderer(self.output_directory).render(k8s_objects)
+        HelmOutputRenderer(self.output_directory, mode="flat").render(k8s_objects)
 
     def _render_helm_subcharts(self, k8s_objects):
-        pass
+        HelmOutputRenderer(self.output_directory, mode="subcharts").render(k8s_objects)
