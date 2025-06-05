@@ -38,7 +38,7 @@
 
     [x] dict2items	- Converts a dict to a list of key-value pairs
 
-    [ ] items2dict	- Converts a list of key-value pairs to a dict
+    [x] items2dict	- Converts a list of key-value pairs to a dict
 
     [x] combine	 - Merges dictionaries
 
@@ -63,6 +63,14 @@
 [ ] Support `.j2` variable files or templated var files
 
 [ ] Support `vars/main.yml` in other relevant Ansible folders (e.g., `tasks/`, `handlers/`)
+
+### Output Compatability
+
+[ ] Helm
+    [x] Render 1 chart 
+    [] Render 1 parent chart with subcharts
+[x] Raw k8s
+
 
 ### Test Coverage
 
