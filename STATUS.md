@@ -66,9 +66,9 @@
 
 ### Output Compatability
 
-[ ] Helm
+[x] Helm
     [x] Render 1 chart 
-    [] Render 1 parent chart with subcharts
+    [x] Render 1 parent chart with subcharts
 [x] Raw k8s
 
 
