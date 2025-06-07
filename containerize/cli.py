@@ -9,6 +9,7 @@ from containerize.transformer.play_loader import PlayLoader
 from containerize.transformer.output.output_type import OutputType
 from containerize.transformer.playbook_transformer import PlaybookTransformer
 from containerize.transformer.output.output_renderer import OutputRenderer
+from containerize.transformer.context.transform_context import TransformContext
 
 logger = logging.getLogger(__name__)
 app = typer.Typer(help="🧪 Diagnose and 🛠 Transform your repo for containerization.")
@@ -78,7 +79,13 @@ def transform(
     #  Step 5: Transform tasks to Openshift artifacts
     for task in tasks:
         typer.echo(f"Converting ✅ Task: {task.get('name')}")
-
+        
+    ctx = TransformContext(
+        name="my-app",
+        image="myregistry/my-app:latest",
+        replicas=2,
+        helm_mode=(output_type == "helm")
+    )
     transformer = PlaybookTransformer(tasks)
     k8s_objects = transformer.transform()
     

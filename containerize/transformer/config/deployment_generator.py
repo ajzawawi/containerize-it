@@ -1,6 +1,11 @@
 from containerize.transformer.config.config_mount_context import ConfigMountContext
 
-def generate_deploymentconfig(config_ctx: ConfigMountContext):
+from containerize.transformer.context.transform_context import TransformContext
+
+def generate_deploymentconfig(config_ctx: ConfigMountContext, ctx: TransformContext):
+    name = "{{ .Values.name }}" if ctx.helm_mode else ctx.name
+    image = "{{ .Values.image }}" if ctx.helm_mode else ctx.image
+    replicas = "{{ .Values.replicas }}" if ctx.helm_mode else ctx.replicas
     volume_mounts = []
     volumes = []
 
@@ -21,19 +26,19 @@ def generate_deploymentconfig(config_ctx: ConfigMountContext):
         "apiVersion": "apps.openshift.io/v1",
         "kind": "DeploymentConfig",
         "metadata": {
-            "name": "my-app"
+            "name": name
         },
         "spec": {
-            "replicas": 1,
-            "selector": {"app": "my-app"},
+            "replicas": replicas,
+            "selector": {"app": name},
             "template": {
                 "metadata": {
-                    "labels": {"app": "my-app"}
+                    "labels": {"app": name }
                 },
                 "spec": {
                     "containers": [{
-                        "name": "my-container",
-                        "image": "REPLACE_ME",
+                        "name": f"{name}-container",
+                        "image": image,
                         "volumeMounts": volume_mounts
                     }],
                     "volumes": volumes

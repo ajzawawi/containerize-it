@@ -1,5 +1,7 @@
 from containerize.transformer.playbook_transformer import PlaybookTransformer
 
+from containerize.transformer.context.transform_context import TransformContext
+
 def describe_playbook_transformer():
     def it_should_transform_copy_tasks_and_generate_configmaps_and_deployment():
         playbook = [
@@ -32,7 +34,14 @@ def describe_playbook_transformer():
             }
         ]
 
-        transformer = PlaybookTransformer(playbook, role_name_hint="my-role")
+        transform_ctx = TransformContext(
+            name="my-app",
+            image="my-app-image:latest",
+            replicas=1,
+            helm_mode=False
+        )
+
+        transformer = PlaybookTransformer(playbook, ctx=transform_ctx, role_name_hint="my-role")
         output = transformer.transform()
 
         configmaps = [res for res in output if res["kind"] == "ConfigMap"]
@@ -54,3 +63,8 @@ def describe_playbook_transformer():
         volumes = deployment["spec"]["template"]["spec"]["volumes"]
         assert {"name": "my-role-etc-myapp", "configMap": {"name": "my-role-etc-myapp"}} in volumes
         assert {"name": "my-role-opt-data", "configMap": {"name": "my-role-opt-data"}} in volumes
+
+        assert deployment["metadata"]["name"] == "my-app"
+        assert deployment["spec"]["replicas"] == 1
+        assert deployment["spec"]["template"]["spec"]["containers"][0]["image"] == "my-app-image:latest"
+        assert deployment["spec"]["template"]["spec"]["containers"][0]["name"] == "my-app-container"

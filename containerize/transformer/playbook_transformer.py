@@ -2,11 +2,14 @@ from containerize.transformer.tasks.task_transformer import TaskTransformer
 from containerize.transformer.config.config_mount_context import ConfigMountContext
 from containerize.transformer.config.deployment_generator import generate_deploymentconfig
 
+from containerize.transformer.context.transform_context import TransformContext
+
 class PlaybookTransformer:
-    def __init__(self, playbook: dict, role_name_hint: str = "generated"):
+    def __init__(self, playbook: dict, ctx: TransformContext, role_name_hint: str = "generated"):
         self.playbook = playbook
         self.output = []
         self.config_ctx = ConfigMountContext()
+        self.ctx = ctx
         self.role_name_hint = role_name_hint
     
     def transform(self):
@@ -31,5 +34,5 @@ class PlaybookTransformer:
             self.output.append(configmap)
     
     def _generate_deployment_config(self):
-        deployment = generate_deploymentconfig(self.config_ctx)
+        deployment = generate_deploymentconfig(self.config_ctx, self.ctx)
         self.output.append(deployment)

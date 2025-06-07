@@ -1,10 +1,10 @@
 from containerize.transformer.config.config_mount_context import ConfigMountContext
 from containerize.transformer.config.deployment_generator import generate_deploymentconfig
+from containerize.transformer.context.transform_context import TransformContext
 
 def test_generate_deploymentconfig_with_config_mounts():
     ctx = ConfigMountContext()
 
-    # Register multiple copy tasks that go into different mount paths
     ctx.register_copy_task({
         "name": "Copy app.conf",
         "copy": {
@@ -21,17 +21,23 @@ def test_generate_deploymentconfig_with_config_mounts():
         }
     }, configmap_name_hint="my-role")
 
-    dc = generate_deploymentconfig(config_ctx=ctx)
+    transform_ctx = TransformContext(
+        name="my-app",
+        image="my-app-image:latest",
+        replicas=2,
+        helm_mode=False
+    )
+
+    dc = generate_deploymentconfig(config_ctx=ctx, ctx=transform_ctx)
 
     assert dc["kind"] == "DeploymentConfig"
     assert dc["metadata"]["name"] == "my-app"
-    assert dc["spec"]["replicas"] == 1
+    assert dc["spec"]["replicas"] == 2
 
-    # Validate container config
     containers = dc["spec"]["template"]["spec"]["containers"]
     assert len(containers) == 1
-    assert containers[0]["name"] == "my-container"
-    assert containers[0]["image"] == "REPLACE_ME"
+    assert containers[0]["name"] == "my-app-container"
+    assert containers[0]["image"] == "my-app-image:latest"
 
     volume_mounts = containers[0]["volumeMounts"]
     assert {"name": "my-role-etc-myapp", "mountPath": "/etc/myapp"} in volume_mounts
